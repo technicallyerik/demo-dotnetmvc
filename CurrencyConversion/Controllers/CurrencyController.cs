@@ -46,7 +46,16 @@ namespace CurrencyConversion.Controllers
                 return new ContentResult{ Content = errors };
             }
 
-            decimal exchangeRate = CurrencyService.GetExchangeRate(vm.SourceCurrency, vm.DestinationCurrency);
+            decimal exchangeRate;
+            try
+            {
+                exchangeRate = CurrencyService.GetExchangeRate(vm.SourceCurrency, vm.DestinationCurrency);
+            }
+            catch (CurrencyServiceException ex)
+            {
+                return new ContentResult {Content = ex.Message};
+            }
+
             decimal newValue = vm.SourceAmount * exchangeRate;
             return new ContentResult { Content = newValue.ToString() };
         }

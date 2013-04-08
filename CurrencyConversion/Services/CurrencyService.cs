@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Web;
@@ -41,7 +42,36 @@ namespace CurrencyConversion.Services
         {
             var webClient = new WebClient();
             string queryString = parameters.ToQueryString();
-            string jsonString = webClient.DownloadString(string.Format("{0}{1}{2}", BASE_URL, endpoint, queryString));
+            string jsonString = String.Empty;
+            try
+            {
+                jsonString = webClient.DownloadString(string.Format("{0}{1}{2}", BASE_URL, endpoint, queryString));
+            }
+            catch (WebException ex)
+            {
+                // Open Exchange Rates sends error HTTP status codes in addition to error JSON.  
+                // We want to ignore the exceptions thrown, and get the underlying JSON.
+                if (ex.Status == WebExceptionStatus.ProtocolError)
+                {
+                    if (ex.Response != null)
+                    {
+                        var responseStream = ex.Response.GetResponseStream();
+
+                        if (responseStream != null)
+                        {
+                            using (var reader = new StreamReader(responseStream))
+                            {
+                                jsonString = reader.ReadToEnd();
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    // Error is legit.  Re-throw it.
+                    throw;
+                }
+            }
             return jsonString;
         }
 
