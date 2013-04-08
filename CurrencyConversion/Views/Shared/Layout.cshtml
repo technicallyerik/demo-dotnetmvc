@@ -1,0 +1,23 @@
+﻿@using SquishIt.Framework
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Currency Converter - @ViewBag.Title</title>
+    @Html.Raw(Bundle.JavaScript().Add("~/Scripts/jquery-1.9.1.js")
+                                 .Add("~/Scripts/jquery.unobtrusive-ajax.js")
+                                 .Add("~/Scripts/jquery.validate.js")
+                                 .Add("~/Scripts/jquery.validate.unobtrusive.js")
+                                 .Add("~/Scripts/bootstrap.js")
+                                 .Render("combinedjs_#.js"))
+    @Html.Raw(Bundle.Css().Add("~/Content/bootstrap.css")
+                          .Add("~/Content/bootstrap-responsive.css")
+                          .Add("~/Content/screen.css")
+                          .Render("combinedcss_#.css"))
+</head>
+    <body>
+        <div class="container">
+            @RenderBody()
+        </div>
+    </body>
+</html>
