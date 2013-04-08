@@ -14,9 +14,6 @@ namespace CurrencyConversion.Services
     /// </summary>
     public class CurrencyService : ICurrencyService
     {
-        private const string BASE_URL = "http://openexchangerates.org/api/";
-        private const string API_KEY = "PUT_YOUR_API_KEY_HERE";
-
         /// <summary>
         /// Performs the base request, and deserializes the result to a JObject.
         /// </summary>
@@ -26,7 +23,7 @@ namespace CurrencyConversion.Services
         protected internal virtual JObject BaseRequest(string endpoint, Dictionary<string, string> parameters)
         {
             parameters = parameters ?? new Dictionary<string, string>();
-            parameters.Add("app_id", API_KEY);
+            parameters.Add("app_id", CurrencyServiceSettings.Settings.Key);
             var jsonString = GetJsonFromWebService(endpoint, parameters);
             var result = (JObject)JsonConvert.DeserializeObject(jsonString);
             return result;
@@ -45,7 +42,7 @@ namespace CurrencyConversion.Services
             string jsonString = String.Empty;
             try
             {
-                jsonString = webClient.DownloadString(string.Format("{0}{1}{2}", BASE_URL, endpoint, queryString));
+                jsonString = webClient.DownloadString(string.Format("{0}{1}{2}", CurrencyServiceSettings.Settings.Url, endpoint, queryString));
             }
             catch (WebException ex)
             {

@@ -146,6 +146,7 @@
     <Compile Include="Models\Currency\IndexModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\CurrencyService.cs" />
+    <Compile Include="Services\CurrencyServiceSettings.cs" />
     <Compile Include="Services\ICurrencyService.cs" />
   </ItemGroup>
   <ItemGroup>
