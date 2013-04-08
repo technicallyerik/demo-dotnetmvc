@@ -14,7 +14,7 @@ namespace CurrencyConversion.Services
     public class CurrencyService : ICurrencyService
     {
         private const string BASE_URL = "http://openexchangerates.org/api/";
-        private const string API_KEY = "7216ee38ad3f490aac84df1b2b6f70fb";
+        private const string API_KEY = "PUT_YOUR_API_KEY_HERE";
 
         /// <summary>
         /// Performs the base request, and deserializes the result to a JObject.
