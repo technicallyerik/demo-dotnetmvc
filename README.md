@@ -136,3 +136,58 @@ The interface for the above service, used for dependency injection and unit test
 Most of this file is auto-generated.  The only part you might really modify is the <namespaces>
 section which will allow you to reference classes in views without the need for a @using line.
 
+**Shared/Layout.cshtml**
+
+There is nothing particuarly special about this view that makes it a layout, other than
+the fact that it is referenced as one in other views.  At the top you'll see that uses
+[SquishIt](https://github.com/jetheredge/SquishIt) for the combination and minification
+of assets.  Whether or not the assets gets combined depends on this line in the web.config:
+
+    <compilation debug="true" targetFramework="4.5" />
+
+You should also notice:
+
+    @RenderBody()
+    
+This is the placeholder for where the other views' contents will go.  If you need more than
+one place to put content in a template, you can use sections, which are placed in the
+layout using the following syntax:
+
+    @RenderSection("SectionName")
+    
+Then in the view you would do:
+
+    @section SectionName {
+        <b>bla bla stuff here</b>
+    }
+    
+**Views/Currency/Index.cshtml**
+
+This is the view used for the Index action in the Currency controller.  At the top, we define
+the layout, and set the title of the page.  Next, we use a HTML helper to display a list of
+validation errors, if the view is loaded with a model that already has errors.
+
+In the form tag, you'll notice HTML5 data attributes, which ties into the Unobtrusive jQuery Ajax plugin,
+which arguably makes the markup easier to understand and reduces repetative JavaScript.
+
+The other HTML helpers like DropDownFor and TextBoxFor ensure that the markup generated will
+properly post the data back to MVC in a way that it will properly bind with the View Model that
+made the page in the first place.  They will also generate the appropriate data attributes
+used with the Unobtrusive jQuery Validation plugin, again, which reducuces the JavaScript required.
+
+**Global.asax.cs**
+
+This file has functions that are called for the lifecycle of the application.  The most common
+is Application_Start() where things like cache mechinisms might be setup.
+
+**Web.config**
+
+Think of this file as IIS's equivalent to Apache's .htaccess.  It contains all the configuration
+settings for the application.  You'll notice there are also a debug and release versions.  This
+allows you to have different values for attributes based on the current build configuration.
+
+**CurrencyConversion.Tests**
+
+Unit tests are held in a separate project.  We utalize [NUnit](http://www.nunit.org/) for 
+the testing framework and [Rhino Mocks](http://www.hibernatingrhinos.com/oss/rhino-mocks) for 
+object mocking.
