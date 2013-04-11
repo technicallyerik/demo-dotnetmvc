@@ -5,6 +5,10 @@ I created this MVC application as a simple demonstration of some of techniques y
 find in larger applications:  dependency injection, unit testing, attribute routing,
 asset minification, unobtrusive jQuery, and validation.
 
+3rd party dependencies aren't included in source control.  To get this to build, after
+opening it in Visual Studio, you will want to right-click on the solution and select
+'Enable NuGet Package Restore'
+
 The Files
 ---------
 **App_Start/AttributeRoutingConfig.cs**
@@ -55,8 +59,8 @@ On the top of this controller you will notice:
 
     public CurrencyController(ICurrencyService currencyService)
     
-If a controller is instantiated by the MVC framework, how does it get an instance of
-the CurrencyService?  [Ninject](http://www.ninject.org/) takes care of this automatically,
+You may be wondering if a controller is instantiated by the MVC framework, how it gets an instance of
+the CurrencyService.  [Ninject](http://www.ninject.org/) takes care of this automatically,
 based on the mappings you setup in *App_Start/NinjectWebCommon.cs*.  If for some reason or
 another you wouldn't want to use a dependency injection framework, you could use this
 altnernative, which would still easily allow for unit testing:
@@ -72,7 +76,7 @@ Next you'll see the Index() action, which is pretty self explanitory.  We first 
 [Attribute Routing](http://attributerouting.net/) to map the root directory to this action.
 Inside the function, we hit the service to get the list of available currencies.  We create
 a new instance of the view model, pass in the currencies, setup some defaults, and pass
-it to the view. How does it know what view to display?  By default, calling View() will look for
+it to the view. You may be wondering how it knows what view to display.  By default, calling View() will look for
 */Views/[Controller]/[Action].cshtml*
 
 The Convert() action takes in the posted back form.  Since we created the form elements
@@ -127,9 +131,18 @@ This is the service that accesses Open Exchange Rates.  It accesses the service 
 with [Newtonsoft Json](http://james.newtonking.com/pages/json-net.aspx) which is generally considered
 better performing than other JSON frameworks.
 
+The WebClient class is part of the base .NET 4.5 framework.
+
 **Services/ICurrencyService.cs**
 
 The interface for the above service, used for dependency injection and unit testing.
+
+**Services/CurrencyServiceSettings.cs**
+
+This defines a custom XML setting for the service, which is used in the *web.config* file.  
+This setting stores the Open Exchange Rates API url and your key.  It is typically good
+practice to store user configuration settings in the *web.config* file, because you can 
+leverage many tools to help modify this file depending on the environment you are on (dev, beta, production, etc).
 
 **Views/Web.config**
 
@@ -163,27 +176,63 @@ Then in the view you would do:
     
 **Views/Currency/Index.cshtml**
 
-This is the view used for the Index action in the Currency controller.  At the top, we define
-the layout, and set the title of the page.  Next, we use a HTML helper to display a list of
-validation errors, if the view is loaded with a model that already has errors.
+This is the view used for the Index action in the Currency controller.  It uses the Razor view engine.
+At the top, we define the layout, and set the title of the page:
 
-In the form tag, you'll notice HTML5 data attributes, which ties into the Unobtrusive jQuery Ajax plugin,
-which arguably makes the markup easier to understand and reduces repetative JavaScript.
+    @{
+        ViewBag.Title = "Index";
+        Layout = "~/Views/Shared/Layout.cshtml";
+    }
+
+Next, we use a HTML helper to display a list of validation errors, if the view is loaded with a 
+model that already has errors:
+
+    @Html.ValidationSummary();
+
+In the FORM tag, you'll first notice that we generate the URL server-side.  Always use the Url.Action 
+helpers to generate a URL based on a controller and action!  This allows you to change the 
+routes of your pages without worrying about updating all your views:
+
+    @Url.Action("Convert")
+
+You will also notice in the FORM tag the HTML5 data attributes, which ties into the Unobtrusive jQuery Ajax plugin,
+arguably making the markup easier to understand and reduces repetative JavaScript.
 
 The other HTML helpers like DropDownFor and TextBoxFor ensure that the markup generated will
 properly post the data back to MVC in a way that it will properly bind with the View Model that
 made the page in the first place.  They will also generate the appropriate data attributes
 used with the Unobtrusive jQuery Validation plugin, again, which reducuces the JavaScript required.
 
+    @Html.DropDownListFor(m => m.SourceCurrency, Model.AvailableCurrencies)
+
 **Global.asax.cs**
 
 This file has functions that are called for the lifecycle of the application.  The most common
-is Application_Start() where things like cache mechinisms might be setup.
+is Application_Start() where things like cache mechanisms might be setup.
+
+In a default MVC configuration, you will see the routes being built here, but again we 
+are instead using a route attribute plugin instead.  
+
+You will also notice *App_Start/AttributeRoutingConfig.cs* and *App_Start/NinjectWebCommon.cs* 
+are not referenced here, even though both of those files are run at startup.  That is because
+they are using [WebActivator](https://github.com/davidebbo/WebActivator) to inject themselves
+into the website lifecycle.
 
 **Web.config**
 
 Think of this file as IIS's equivalent to Apache's .htaccess.  It contains all the configuration
-settings for the application.  You'll notice there are also a debug and release versions.  This
+settings for the application.  
+
+We use the custom setting we setup in *Services/CurrencyServiceSettings.cs* here:
+
+    <configSections>
+        <section name="CurrencyServiceSettings" type="CurrencyConversion.Services.CurrencyServiceSettings, CurrencyConversion" />
+    </configSections>
+    <CurrencyServiceSettings key="YOUR_API_KEY_HERE" />
+      
+You will want to sign up for Open Exchange Rates and put your API key there.
+
+You'll notice there are also a debug and release versions.  This
 allows you to have different values for attributes based on the current build configuration.
 
 **CurrencyConversion.Tests**
