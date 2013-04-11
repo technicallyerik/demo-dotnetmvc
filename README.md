@@ -240,3 +240,33 @@ allows you to have different values for attributes based on the current build co
 Unit tests are held in a separate project.  We utalize [NUnit](http://www.nunit.org/) for 
 the testing framework and [Rhino Mocks](http://www.hibernatingrhinos.com/oss/rhino-mocks) for 
 object mocking.
+
+**CurrencyConversion.Tests/Services/CurrencyServiceTest.cs**
+
+This file includes an example of mocking with Rhino Mocks to test parts of a class.  There are three types 
+of mocking available:
+
+* StrictMock - Only methods explicitly recorded are valid
+* DyanmicMock - Methods not setup return null or void
+* PartialMock - Non-mocked functions will fall back to the original
+
+In the case of GetCurrencies_Should_Parse_Object_As_Dictionary(), we want to test GetCurrencies in the
+CurrencyService class while mocking out GetJsonFromWebService in the CurrencyService class. 
+Therefore, we create a PartialMock.
+
+After setting up our mocks, we want to 'play' them by calling
+
+    mocks.ReplayAll()
+    
+Next, we make our assertions, and verify they all passed using
+
+    mocks.VerifyAll()
+    
+You can also test that exceptions are thrown, as demonstrated in GetExchangeRate_Error_Should_Throw_Proper_Exception()
+
+**CurrencyConversionTests/Controllers/CurrencyControllerTest.cs**
+
+This demonstrates stubbing.  Stubbing is where you're not partially testing a class, but rather
+testing one class that depends on another.  In our case, we just want to test the CurrencyController, 
+so we pass in a stub CurrencyService to ensure we aren't hitting any of it's logic, and pre-setup
+to return the values that we want and can expect.
