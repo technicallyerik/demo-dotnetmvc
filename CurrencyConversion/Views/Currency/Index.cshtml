@@ -9,25 +9,56 @@
 
 @Html.ValidationSummary()
 
-<form action="@Url.Action("Convert")" method="post"
-      data-ajax="true" 
-      data-ajax-update="#js-currency-result" 
-      data-ajax-loading="#js-currency-result-loading">
-    
-    <div class="control-group">
-        Convert @Html.DropDownListFor(m => m.SourceCurrency, Model.AvailableCurrencies) to 
-        @Html.DropDownListFor(m => m.DestinationCurrency, Model.AvailableCurrencies)
-    </div>
-    
-    <div class="control-group">
-        @Html.TextBoxFor(m => m.SourceAmount)
-        @Html.ValidationMessageFor(m => m.SourceAmount)
-    </div>
-    
-    <button type="submit" class="btn btn-primary">Convert</button>
+<fieldset>
+    <legend>Ajax Convert - Attributed form version</legend>
 
-    <h2>Result:</h2>
-    <span class="js-loading" id="js-currency-result-loading">Loading...</span>
-    <span id="js-currency-result"></span>
+    <form action="@Url.Action("Convert")" method="post"
+          data-ajax="true" 
+          data-ajax-update="#js-currency-result" 
+          data-ajax-loading="#js-currency-result-loading">
+    
+        <div class="control-group">
+            Convert @Html.DropDownListFor(m => m.SourceCurrency, Model.AvailableCurrencies) to 
+            @Html.DropDownListFor(m => m.DestinationCurrency, Model.AvailableCurrencies)
+        </div>
+    
+        <div class="control-group">
+            @Html.TextBoxFor(m => m.SourceAmount)
+            @Html.ValidationMessageFor(m => m.SourceAmount)
+        </div>
+    
+        <button type="submit" class="btn btn-primary">Convert</button>
 
-</form>
+        <h2>Result:</h2>
+        <span class="js-loading" id="js-currency-result-loading">Loading...</span>
+        <span id="js-currency-result"></span>
+
+    </form>
+</fieldset>
+
+<fieldset>
+    <legend>Ajax Convert - @@Ajax.BeginForm version</legend>
+    @using (Ajax.BeginForm("Convert",
+                           new AjaxOptions
+                               {
+                                   LoadingElementId = "js-ajax-currency-result-loading",
+                                   UpdateTargetId = "js-ajax-currency-result"
+                               }))
+    {
+        <div class="control-group">
+            Convert @Html.DropDownListFor(m => m.SourceCurrency, Model.AvailableCurrencies) to 
+            @Html.DropDownListFor(m => m.DestinationCurrency, Model.AvailableCurrencies)
+        </div>
+
+        <div class="control-group">
+            @Html.TextBoxFor(m => m.SourceAmount)
+            @Html.ValidationMessageFor(m => m.SourceAmount)
+        </div>
+
+        <button type="submit" class="btn btn-primary">Convert</button>
+
+        <h2>Result:</h2>
+        <span class="js-loading" id="js-ajax-currency-result-loading">Loading...</span>
+        <span id="js-ajax-currency-result"></span>
+    }
+</fieldset>
