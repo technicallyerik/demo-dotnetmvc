@@ -10,34 +10,6 @@
 @Html.ValidationSummary()
 
 <fieldset>
-    <legend>Ajax Convert - Attributed form version</legend>
-
-    <form action="@Url.Action("Convert")" method="post"
-          data-ajax="true" 
-          data-ajax-update="#js-currency-result" 
-          data-ajax-loading="#js-currency-result-loading">
-    
-        <div class="control-group">
-            Convert @Html.DropDownListFor(m => m.SourceCurrency, Model.AvailableCurrencies) to 
-            @Html.DropDownListFor(m => m.DestinationCurrency, Model.AvailableCurrencies)
-        </div>
-    
-        <div class="control-group">
-            @Html.TextBoxFor(m => m.SourceAmount)
-            @Html.ValidationMessageFor(m => m.SourceAmount)
-        </div>
-    
-        <button type="submit" class="btn btn-primary">Convert</button>
-
-        <h2>Result:</h2>
-        <span class="js-loading" id="js-currency-result-loading">Loading...</span>
-        <span id="js-currency-result"></span>
-
-    </form>
-</fieldset>
-
-<fieldset>
-    <legend>Ajax Convert - @@Ajax.BeginForm version</legend>
     @using (Ajax.BeginForm("Convert",
                            new AjaxOptions
                                {
